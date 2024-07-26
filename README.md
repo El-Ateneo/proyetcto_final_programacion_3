@@ -8,3 +8,7 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 para correr el programa "npm run dev"
+npm i react-router-dom
+instalar logos-icon
+npm install --save @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
+
