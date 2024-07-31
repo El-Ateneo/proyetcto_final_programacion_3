@@ -1,16 +1,17 @@
-
+import { useEffect, useState } from "react";
 import { createContext, useReducer, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+
 const AuthContext = createContext({
-    //state: {},
-    //actions: {},
+    state: {},
+    actions: {},
 });
 
 const ACTIONS = {
     LOGIN: "LOGIN",
     LOGOUT: "LOGOUT",
-    CHECK_AUTH: "CHECK_AUTH",
+    
 };
 
 function reducer(state, action) {
@@ -27,11 +28,7 @@ function reducer(state, action) {
                 isAuthenticated: false,
                 token: null,
             };
-        case ACTIONS.CHECK_AUTH:
-            return {
-                ...state,
-                isAuthenticated: !!state.token,
-            };
+
         default:
             return state;
     }
@@ -46,24 +43,44 @@ function AuthProvider({ children }) {
     const navigate = useNavigate();
     const location = useLocation();
 
+    useEffect(() => {
+        // para recuperar el token de localStorage al cargar la aplicación
+        const token = localStorage.getItem('authToken');
+        if (token) { 
+            dispatch({ type: ACTIONS.LOGIN, payload: token });
+        }
+        console.log("AuthProvider: isAuthenticated al cargar: ", state.isAuthenticated);
+    }, []);
+
+
     const actions = {
         login:(token) => {
+            
+            localStorage.setItem('authToken', token);// Para almacenar el token en localStorage
             dispatch({ type: ACTIONS.LOGIN, payload: token });
-            const origin = location.state?.from?.pathname || "/tasklist";
-            navigate(origin);
-            //navigate("/tasklist"); 
+            const redirectTo = localStorage.getItem('redirectTo') || "/tasklist";
+            //localStorage.removeItem('redirectTo'); // Limpiar la ubicación de origen
+            navigate(redirectTo);        
+
+            //const origin = location.state?.from?.pathname || "/tasklist";
+            //navigate(origin);
             console.log("entro a action login")
         },
     
         logout: () => {
-                dispatch({ type: ACTIONS.LOGOUT });
-                navigate("/home");
+            console.log("Logout button clicked");
+            localStorage.removeItem('authToken');
+            dispatch({ type: ACTIONS.LOGOUT });
+            console.log("##State after logout: ", state);
+            navigate("/home");
+            console.log("entro a action logout y el toquen es: ", state)
         
         },
-        checkAuth : () => {
-                dispatch({ type: ACTIONS.CHECK_AUTH });
-            },
-        };
+
+    };
+    useEffect(() => {
+        console.log("State updated: ", state);
+    }, [state]);
 
     return (
         <AuthContext.Provider value={{ state, actions }}>

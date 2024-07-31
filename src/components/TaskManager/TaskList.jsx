@@ -1,41 +1,42 @@
-import useFetch from "../../hooks/useFetch";
-import SongCard from "./SongCard";
+import React, { useState } from 'react';
+import TaskModal from './TaskModal';
 
-import { useEffect } from "react";
+const TaskList = ({ tasks, projectId }) => {
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-function SongList() {
-    const [{ data, isError, isLoading }, doFetch] = useFetch(
-        "https://sandbox.academiadevelopers.com/harmonyhub/songs/",
-        {}
-    );
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  };
 
- 
+  const handleCreateTask = () => {
+    setSelectedTask(null);
+    setIsModalOpen(true);
+  };
 
-    useEffect(() => {
-        doFetch();
-    }, []);
+  const handleCloseModal = () => {
+    setSelectedTask(null);
+    setIsModalOpen(false);
+  };
 
-    if (isLoading) return <p>Cargando canciones...</p>;
-   
-    if (isError) return <p>Error al cargar las canciones.</p>;
-    
-    if (!data) return <p>No hay canciones disponibles</p>;
-   
+  return (
+    <div>
+      <h2>Tasks</h2>
+      <button onClick={handleCreateTask}>Create New Task</button>
+      <div>
+        {tasks.map(task => (
+          <div key={task.id} onClick={() => handleTaskClick(task)}>
+            <h3>{task.title}</h3>
+            <p>{task.description}</p>
+          </div>
+        ))}
+      </div>
+      {isModalOpen && (
+        <TaskModal task={selectedTask} projectId={projectId} onClose={handleCloseModal} />
+      )}
+    </div>
+  );
+};
 
-    return (
-        <div>
-            <div className="my-5">
-                <h2 className="title">Lista de Canciones</h2>
-                <ul>
-                    {data.map((song) => (
-                        <div key={song.id} className="column is-two-third">
-                            <SongCard song={song} />
-                        </div>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    );
-}
-
-export default SongList;
+export default TaskList;

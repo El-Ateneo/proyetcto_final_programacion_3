@@ -6,6 +6,10 @@ import About from "../components/About";
 import ProtectedRoute from "./ProtectedRoute";
 import Home from "../components/Home";
 import TaskList from "../components/TaskManager/TaskList";
+import NavBar from "../components/NavBar";
+import LoginModal from "../components/Auth/LoginModal";
+import ProfilePage from "../components/Perfil/ProfilePage";
+import ProjectList from "../components/TaskManager/ProjectList";
 
 const Router = createBrowserRouter(
     [
@@ -14,6 +18,10 @@ const Router = createBrowserRouter(
             children: [
                 {
                     path: "/home",
+                    element: <Home/>,
+                },
+                {
+                    path: "/",
                     element: <Home/>,
                 },
                 {
@@ -31,6 +39,15 @@ const Router = createBrowserRouter(
                     ),
                 },
                 {
+                    // index: true, 
+                    path: "/profile",
+                    element: (
+                        <ProtectedRoute>
+                            <ProfilePage />
+                        </ProtectedRoute>
+                    ),
+                },
+                {
                     path: "/about",
                     element: (
                         <ProtectedRoute>
@@ -43,6 +60,14 @@ const Router = createBrowserRouter(
                     element: (
                         <ProtectedRoute>
                             <TaskList />
+                        </ProtectedRoute>
+                    ),
+                },
+                {
+                    path: "/projects",
+                    element: (
+                        <ProtectedRoute>
+                            <ProjectList />
                         </ProtectedRoute>
                     ),
                 },

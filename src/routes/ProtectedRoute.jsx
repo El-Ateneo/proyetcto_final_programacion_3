@@ -10,8 +10,11 @@ export default function ProtectedRoute({ children }) {
     const location = useLocation();
 
     if (!isAuthenticated) {
+        localStorage.setItem('redirectTo', location.pathname);
+        console.log("Ubicación de origen guardada: ", location.pathname);
         console.log("!isAuthenticated es: ", !isAuthenticated)
-        return <Navigate to="/home" state={{ from: location }} />;
+        //return <Navigate to="/home" state={{ from: location }} />;
+        return <Navigate to="/home" />;
     }
 
     return children;

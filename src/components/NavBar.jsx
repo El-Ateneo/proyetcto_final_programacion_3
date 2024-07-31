@@ -11,7 +11,8 @@ import { faUser, faSignOutAlt, faUserCircle, faMoon, faSun } from "@fortawesome/
 
 function NavBar({ appName }) {
     const { theme, toggleTheme } = useContext(ThemeContext);
-    const { state, login, logout } = useAuth();
+    const { state, actions } = useAuth();
+    const { logout } = actions;
     const { isAuthenticated } = state;
     const [isLoginModalActive, setLoginModalActive] = useState(false);
 
@@ -41,10 +42,11 @@ function NavBar({ appName }) {
                 </div>
                 <NavMenu
                     items={[
-                        { text: "Home", url: "/" },
+                        { text: "Home", url: "/home" },
                         ...(isAuthenticated ? [{ text: "Tasks", url: "/TaskList" }] : []),
                         { text: "About", url: "/about" },
                         { text: "Contact", url: "#contact" },
+                        { text: "Projects", url: "/projects" },
                     ]}
                 />
                 <div className="navbar-end">
@@ -60,12 +62,13 @@ function NavBar({ appName }) {
                         </button>
                     ) : (
                         <>
-                            <button className="button is-bulma-link is-small">
+                            <Link className="button is-bulma-link " to="/profile">
                                 <span className="icon">
-                                    <FontAwesomeIcon icon={faUser} />
+                                    <FontAwesomeIcon icon={faUserCircle} />
+                                    
                                 </span>
-                                <span>Mi información</span>
-                            </button>
+                                <span>Mi información</span>                                   
+                            </Link>
                             <button className="button is-danger is-small" onClick={logout}>
                                 <span className="icon">
                                     <FontAwesomeIcon icon={faSignOutAlt} />
