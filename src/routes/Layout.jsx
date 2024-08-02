@@ -9,7 +9,7 @@ export default function Layout() {
     const [theme, toggleTheme] = useTheme();
 
     return (
-        <AuthProvider>
+        <AuthProvider initialState= {{isAuthenticated: false}}>
             <div
                 className={`hero is-fullheight is-flex is-flex-direction-column`}
             >
@@ -19,7 +19,7 @@ export default function Layout() {
                         <Outlet />
                     </div>
                     <FooterBar
-                        appName={"Creat by Frias Alejandro"}
+                        appName={"Created by Frias Alejandro"}
                         socialNetworks={[
                             { name: "facebook", url: "https://facebook.com" },
                             { name: "twitter", url: "https://twitter.com" },

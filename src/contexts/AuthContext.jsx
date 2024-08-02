@@ -11,6 +11,7 @@ const AuthContext = createContext({
 const ACTIONS = {
     LOGIN: "LOGIN",
     LOGOUT: "LOGOUT",
+    SET_LOADING: "SET_LOADING"
     
 };
 
@@ -21,12 +22,19 @@ function reducer(state, action) {
                 ...state,
                 token: action.payload,
                 isAuthenticated: true,
+                loading: false,
             };
         case ACTIONS.LOGOUT:
             return {
                 ...state,
                 isAuthenticated: false,
                 token: null,
+                loading: false,
+            };
+        case ACTIONS.SET_LOADING:
+            return {
+                ...state,
+                loading: action.payload,
             };
 
         default:
@@ -35,22 +43,54 @@ function reducer(state, action) {
 }
 
 function AuthProvider({ children }) {
-    const [state, dispatch] = useReducer(reducer, {
-       isAuthenticated: false,
-       token: null,
-       
-    });
+    
     const navigate = useNavigate();
-    const location = useLocation();
+    //const location = useLocation();
+
+    const [state, dispatch] = useReducer(reducer, {
+        isAuthenticated: false,
+        //token: null,
+        token: localStorage.getItem('authToken') || null,// para recuperar el token de localStorage al cargar la aplicación
+        loading: true,
+    });
 
     useEffect(() => {
-        // para recuperar el token de localStorage al cargar la aplicación
-        const token = localStorage.getItem('authToken');
-        if (token) { 
-            dispatch({ type: ACTIONS.LOGIN, payload: token });
+        
+        //const token = localStorage.getItem('authToken');
+        if (state.token) { 
+            dispatch({ type: ACTIONS.LOGIN, payload: state.token });    
+        } else {
+            dispatch({ type: ACTIONS.SET_LOADING, payload: false });
         }
         console.log("AuthProvider: isAuthenticated al cargar: ", state.isAuthenticated);
-    }, []);
+        console.log("Token encontrado:", state.token);
+        console.log("Estado después de verificar token:", state);
+    }, [state.token]);
+
+    //para controlar el tiempo de inactividad
+    useEffect(() => {
+        let timeout;
+        const resetTimeout = () => {
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                actions.logout();
+                navigate("/home");
+            }, 1 * 60 * 1000); // 15 minutos de inactividad
+        };
+
+        window.addEventListener('mousemove', resetTimeout);
+        window.addEventListener('keypress', resetTimeout);
+        window.addEventListener('click', resetTimeout);
+
+        resetTimeout();
+
+        return () => {
+            clearTimeout(timeout);
+            window.removeEventListener('mousemove', resetTimeout);
+            window.removeEventListener('keypress', resetTimeout);
+            window.removeEventListener('click', resetTimeout);
+        };
+    }, [navigate]);
 
 
     const actions = {

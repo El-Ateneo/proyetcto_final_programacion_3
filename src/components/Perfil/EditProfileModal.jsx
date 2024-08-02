@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 
-const EditProfileModal = ({ profile, onClose }) => {
+const EditProfileModal = ({ profile, onClose, onProfileUpdate }) => {
     const { state: authState } = useAuth();
     const [formData, setFormData] = useState({
         username: profile.username,
@@ -10,7 +10,7 @@ const EditProfileModal = ({ profile, onClose }) => {
         email: profile.email,
         dob: profile.dob || '',
         bio: profile.bio || '',
-        state: profile.state || '',
+        state: profile.state.id || '',
         image: null
     });
     const [error, setError] = useState(null);
@@ -79,18 +79,23 @@ const EditProfileModal = ({ profile, onClose }) => {
                 body: formDataToSend,
                 //body: JSON.stringify(dataToSend),
                 headers: {
-                    'Authorization': `Token ${authState.token}`,
+                    'Authorization': `token ${authState.token}`,
                     //'Content-Type': 'application/json'
                 }
             });
-            console.log("datos a enviar para actualizar", dataToSend);
+            
             if (!response.ok) {
                 // Manejo de errores
                 const errorData = await response.json();
                 throw new Error(`Error ${response.status}: ${errorData.detail || 'Error updating profile'}`);
             }
-    
             // Si la actualización fue exitosa, cierra el modal
+            console.log("datos a enviaados con exito");
+            console.log("datos a enviar para actualizar", dataToSend);
+            const updatedProfile = await response.json();
+            onProfileUpdate(updatedProfile);
+            
+            
             onClose();
         } catch (error) {
             setError(error.message);
