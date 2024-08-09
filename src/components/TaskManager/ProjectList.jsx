@@ -90,7 +90,9 @@ const ProjectList = () => {
                   projects.map(p => (p.id === updatedProject.id ? updatedProject : p))
                 )}
                 onProjectDelete={handleProjectDelete}
+                
               />
+
               <p>
                 
               </p>
