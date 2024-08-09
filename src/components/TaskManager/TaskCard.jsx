@@ -1,39 +1,27 @@
-import { useContext } from "react";
-import ThemeContext from "../../contexts/ThemeContext";
+import React from 'react';
 
-function SongCard({ song }) {
-    const { theme } = useContext(ThemeContext);
-
-    const backgroundClassName = "has-background-" + theme;
-
-    let textClassName = "has-text-";
-
-    if (theme === "dark") {
-        textClassName += "light";
-    } else {
-        textClassName += "dark";
-    }
-
-    const className = backgroundClassName + " " + textClassName;
-    return (
-        <div className={`card ${className}`}>
-            <div className="card-content">
-                <div className="media">
-                    <div className="media-content">
-                        <p className={`title is-4 ${textClassName}`}>
-                            {song.title}
-                        </p>
-                    </div>
-                </div>
-                <div className="content">
-                    <audio controls>
-                        <source src={song.song_file} type="audio/mpeg" />
-                        Tu navegador no soporta el elemento de audio.
-                    </audio>
-                </div>
-            </div>
+const TaskCard = ({ task, onTaskUpdate }) => {
+  return (
+    <div className="card">
+      <header className="card-header">
+        <p className="card-header-title">{task.title}</p>
+      </header>
+      <div className="card-content">
+        <div className="content">
+          <p><strong>Description:</strong> {task.description}</p>
+          <p><strong>Due Date:</strong> {task.due_date}</p>
+          <p><strong>Priority:</strong> {task.priority}</p>
+          <p><strong>Assigned To:</strong> {task.assigned_to}</p>
+          <p><strong>Status:</strong> {task.status === 0 ? 'Pending' : task.status === 1 ? 'In Progress' : 'Completed'}</p>
         </div>
-    );
-}
+      </div>
+      <footer className="card-footer">
+        <button className="card-footer-item button is-primary" onClick={() => onTaskUpdate(task)}>
+          Edit
+        </button>
+      </footer>
+    </div>
+  );
+};
 
-export default SongCard;
+export default TaskCard;
