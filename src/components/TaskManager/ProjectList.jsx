@@ -69,6 +69,14 @@ const ProjectList = () => {
     setIsModalOpen(true);
   };
 
+  const handleProjectUpdate = (updatedProject) => {
+    setProjects(prevProjects => 
+      prevProjects.map(project => 
+        project.id === updatedProject.id ? updatedProject : project
+      )
+    );
+  };  
+
   const handleCloseModal = () => {
     setSelectedProject(null);
     setIsModalOpen(false);
@@ -113,6 +121,7 @@ const ProjectList = () => {
         <ProjectModal 
           project={selectedProject} 
           onClose={handleCloseModal}
+          onProjectUpdate={handleProjectUpdate} // Asegúrate de pasar esta prop
         />
       )}
       {isCreateModalOpen && (

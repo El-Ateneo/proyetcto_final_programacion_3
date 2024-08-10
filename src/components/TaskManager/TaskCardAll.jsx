@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import TaskModal from './TaskModal'; // Asegúrate de importar el TaskModal
 import { useAuth } from '../../contexts/AuthContext';
+import TaskModal from './TaskModal';
 
-const TaskCard = ({ task, onTaskUpdate, onTaskDelete }) => {
+const TaskCardAll = ({ task, onTaskUpdate, onTaskDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [users, setUsers] = useState({});
   const [statuses, setStatuses] = useState({});
@@ -80,40 +80,26 @@ const TaskCard = ({ task, onTaskUpdate, onTaskDelete }) => {
   };
 
   return (
-    <div className="card">
-      <header className="card-header">
-        <p className="card-header-title">{task.title}</p>
+    <div className="card shadow-lg my-4 transition-transform transform hover:scale-105">
+      <header className="card-header has-background-info">
+        <p className="card-header-title has-text-white">
+          {task.title}
+        </p>
+        
       </header>
       <div className="card-content">
         <div className="content">
           <p><strong>Descripcion: </strong> {task.description || 'sin descripcion'}</p>
-          <p><strong>fecha de entrega: </strong> {task.due_date || 'sin fecha ded entega'}</p>
+          <p><strong>Fecha de entrega: </strong> {task.due_date || 'sin fecha de entrega'}</p>
           <p><strong>Prioridad: </strong> {priorities[task.priority] || 'sin prioridad'}</p>
-          <p><strong>Asignado A: </strong> {users[task.assigned_to] || 'sin asignacion'}</p>
+          <p><strong>Asignado A: </strong> {users[task.assigned_to] || 'sin asignación'}</p>
           <p><strong>Creado Por: </strong> {users[task.owner] || 'sin dato del creador'}</p>
           <p><strong>Estado: </strong> {statuses[task.status] || 'sin estado'}</p>
         </div>
       </div>
-      <footer className="card-footer">
-        <button className="card-footer-item button is-primary" onClick={handleEdit}>
-          Edit
-        </button>
-        <button className="card-footer-item button is-danger" onClick={handleDelete}>
-          Delete
-        </button>
-      </footer>
-      {isModalOpen && (
-        <TaskModal
-          task={task}
-          onClose={handleModalClose}
-          onSave={handleTaskUpdate}
-          priorities={priorities}
-          statuses={statuses}
-          users={users}
-        />
-      )}
+      
     </div>
   );
 };
 
-export default TaskCard;
+export default TaskCardAll;

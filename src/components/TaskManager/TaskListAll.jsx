@@ -1,24 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import TaskCard from './TaskCard'; // Asegúrate de importar el TaskCard
-import CreateTask from './CreateTask';
-import TaskModal from './TaskModal'; // Asegúrate de importar el TaskModal
 import { useAuth } from '../../contexts/AuthContext';
+import TaskCardAll from './TaskCardAll';
+import TaskModal from './TaskModal'; // Asegúrate de importar el TaskModal
+import CreateTask from './CreateTask'; // Asegúrate de importar el CreateTask
 
-const TaskList = () => {
+const TaskListAll = () => {
   const [tasks, setTasks] = useState([]);
   const [priorities, setPriorities] = useState([]);
   const [states, setStates] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { state: authState } = useAuth();
 
   useEffect(() => {
-    fetchTasks();
-    fetchPriorities();
-    fetchStates();
-    fetchAllUsers();
-  }, [authState.token]); // Dependencia actualizada para usar authState.token
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([
+          fetchTasks(),
+          fetchPriorities(),
+          fetchStates(),
+          fetchAllUsers()
+        ]);
+      } catch (error) {
+        setError('Error fetching data');
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [authState.token]);
 
   const fetchTasks = async () => {
     try {
@@ -120,14 +136,16 @@ const TaskList = () => {
   };
 
   return (
-    <div>
-      <button className="button is-link mb-4" onClick={handleOpenCreateTaskModal}>
-        Añadir Tarea
-      </button>
+    <div className="container">
+      <h2 className="title is-3 has-text-centered has-text-danger">Listado de Todas las Tareas</h2>
+      <div className="field is-grouped">
+      </div>
+      {isLoading && <p className="has-text-info">Cargando tareas...</p>}
+      {error && <p className="has-text-danger">{error}</p>}
       <div className="task-list">
         {tasks.length > 0 ? (
           tasks.map(task => (
-            <TaskCard
+            <TaskCardAll
               key={task.id}
               task={task}
               onTaskUpdate={handleUpdateTask}
@@ -135,34 +153,16 @@ const TaskList = () => {
               priorities={priorities}
               states={states}
               users={users}
+              onClick={() => handleOpenTaskModal(task)}
             />
           ))
         ) : (
-          <p>No hay tareas disponibles</p>
+          <p className="has-text-grey">No hay tareas disponibles</p>
         )}
       </div>
-      {selectedTask && (
-        <TaskModal
-          task={selectedTask}
-          onClose={() => setSelectedTask(null)}
-          onTaskUpdate={handleUpdateTask}
-          priorities={priorities}
-          states={states}
-          users={users}
-        />
-      )}
-      {showCreateModal && (
-        <CreateTask
-          onClose={() => setShowCreateModal(false)}
-          onTaskCreate={handleCreateTask}
-          priorities={priorities}
-          states={states}
-          users={users}
-          authState={authState}
-        />
-      )}
+      
     </div>
   );
 };
 
-export default TaskList;
+export default TaskListAll;
