@@ -3,7 +3,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import ProjectModal from './ProjectModal';
 import TaskModal from './TaskModal'; // Importa el componente TaskModal
 
-
 const ProjectCard = ({ project, onProjectUpdate, onProjectDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false); // Nuevo estado para el modal de tareas
@@ -104,9 +103,6 @@ const ProjectCard = ({ project, onProjectUpdate, onProjectDelete }) => {
     setIsTaskModalOpen(false);
   };
 
-  const handleCloseProjectModal = () => {
-    setIsProjectModalOpen(false);
-  };
   const handleDelete = async (taskId) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
       try {
@@ -125,7 +121,7 @@ const ProjectCard = ({ project, onProjectUpdate, onProjectDelete }) => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    //onProjectUpdate();
+    onProjectUpdate(); // Actualiza el proyecto después de cerrar el modal
   };
 
   return (
@@ -177,7 +173,7 @@ const ProjectCard = ({ project, onProjectUpdate, onProjectDelete }) => {
       {isModalOpen && (
         <ProjectModal
           project={project}
-          onClose={handleCloseModal}
+          onClose={() => setIsModalOpen(false)}
           onProjectUpdate={onProjectUpdate}
         />
       )}

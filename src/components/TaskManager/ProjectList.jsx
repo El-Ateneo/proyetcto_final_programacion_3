@@ -20,6 +20,7 @@ const ProjectList = () => {
       console.error("El perfil del usuario no está disponible.");
       return;
     }
+
     setIsLoading(true);
     try {
       const response = await fetch(`https://sandbox.academiadevelopers.com/taskmanager/projects/?page=${page}`, {
@@ -27,18 +28,24 @@ const ProjectList = () => {
           'Authorization': `Token ${authState.token}`,
         },
       });
+
       if (!response.ok) {
         throw new Error("No se pudieron cargar los proyectos");
       }
+
       const data = await response.json();
       if (data.results) {
-        const userProjects = data.results.filter(
-          project => project.owner === authState.profile.user__id || project.members.includes(authState.profile.user__id)
-        );
-        setProjects((prevProjects) => [...prevProjects, ...userProjects]);
+        const userProjects = data.results.filter(project => {
+          const isOwner = project.owner === authState.profile.user__id;
+          const isMember = Array.isArray(project.members) && project.members.includes(authState.profile.user__id);
+          return isOwner || isMember;
+        });
+
+        setProjects(prevProjects => [...prevProjects, ...userProjects]);
         setNextURL(data.next);
       }
     } catch (error) {
+      console.error('Error fetching projects:', error);
       setIsError(true);
     } finally {
       setIsLoading(false);
@@ -53,7 +60,7 @@ const ProjectList = () => {
 
   const handleLoadMore = () => {
     if (nextURL) {
-      setPage((currentPage) => currentPage + 1);
+      setPage(prevPage => prevPage + 1);
     }
   };
 
@@ -68,48 +75,45 @@ const ProjectList = () => {
   };
 
   const handleProjectCreate = (newProject) => {
-    setProjects([...projects, newProject]);
+    setProjects(prevProjects => [...prevProjects, newProject]);
   };
 
   const handleProjectDelete = (projectId) => {
-    setProjects(projects.filter(project => project.id !== projectId));
+    setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
   };
 
   return (
     <div className="container">
-      <h1 className="title is-color-info" >Lista de Proyectos</h1>
+      <h1 className="title is-color-info">Lista de Proyectos</h1>
       <button className="button is-primary" onClick={() => setIsCreateModalOpen(true)}>
         Nuevo Proyecto
       </button>
       <div className="mt-4">
         {projects.map(project => (
           <div key={project.id}>
-              <ProjectCard
-                project={project}
-                onProjectUpdate={(updatedProject) => setProjects(
-                  projects.map(p => (p.id === updatedProject.id ? updatedProject : p))
-                )}
-                onProjectDelete={handleProjectDelete}
-              />
-              <p>
-              </p>
+            <ProjectCard
+              project={project}
+              onProjectUpdate={(updatedProject) => setProjects(
+                prevProjects => prevProjects.map(p => (p.id === updatedProject.id ? updatedProject : p))
+              )}
+              onProjectDelete={handleProjectDelete}
+              onClick={() => handleProjectClick(project)}
+              
+            /><p> </p>
           </div>
         ))}
       </div>
       {isLoading && <p>Cargando más proyectos...</p>}
       {nextURL && !isLoading && (
-        <button
-          className="button is-primary"
-          onClick={handleLoadMore}
-        >
-          Cargar más
+        <button className="button is-primary" onClick={handleLoadMore}>
+          Cargar Proyectos
         </button>
       )}
       {isModalOpen && (
         <ProjectModal 
-        project={selectedProject} 
-        onClose={handleCloseModal}
-         />
+          project={selectedProject} 
+          onClose={handleCloseModal}
+        />
       )}
       {isCreateModalOpen && (
         <CreateProjectModal
