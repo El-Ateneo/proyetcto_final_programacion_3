@@ -251,7 +251,7 @@ const ProjectModal = ({ project, onClose, onProjectUpdate }) => {
           {project && (
             <div>
               <h3 className="title is-5 mt-4">Tareas del Proyecto</h3>
-              <TaskList tasks={tasks} onEditTask={handleEditTask} onDeleteTask={handleTaskDelete} />
+              <TaskList projectId={project.id} /> 
             </div>
           )}
         </div>

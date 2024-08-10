@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import TaskCard from './TaskCard'; // Asegúrate de importar el TaskCard
+import TaskCard from './TaskCard';
 import CreateTask from './CreateTask';
-import TaskModal from './TaskModal'; // Asegúrate de importar el TaskModal
+import TaskModal from './TaskModal';
 import { useAuth } from '../../contexts/AuthContext';
 
-const TaskList = () => {
+const TaskList = ({ projectId }) => {
   const [tasks, setTasks] = useState([]);
   const [priorities, setPriorities] = useState([]);
   const [states, setStates] = useState([]);
@@ -14,15 +14,19 @@ const TaskList = () => {
   const { state: authState } = useAuth();
 
   useEffect(() => {
-    fetchTasks();
+    if (projectId) {
+      fetchTasks();
+    }
     fetchPriorities();
     fetchStates();
     fetchAllUsers();
-  }, [authState.token]); // Dependencia actualizada para usar authState.token
+  }, [authState.token, projectId]); // Añade projectId a las dependencias
 
   const fetchTasks = async () => {
+    if (!projectId) return; // Asegúrate de que projectId esté disponible
+
     try {
-      const response = await fetch('https://sandbox.academiadevelopers.com/taskmanager/tasks/', {
+      const response = await fetch(`https://sandbox.academiadevelopers.com/taskmanager/tasks/?project=${projectId}`, {
         headers: {
           'Authorization': `Token ${authState.token}`,
         },
@@ -93,6 +97,7 @@ const TaskList = () => {
   };
 
   const handleOpenCreateTaskModal = () => {
+    setSelectedTask(null);
     setShowCreateModal(true);
   };
 
@@ -159,6 +164,7 @@ const TaskList = () => {
           states={states}
           users={users}
           authState={authState}
+          projectId={projectId} // Pasa el ID del proyecto
         />
       )}
     </div>
