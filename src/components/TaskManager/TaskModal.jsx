@@ -1,23 +1,27 @@
-// src/components/TaskManager/TaskModal.jsx
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useAuth } from '../../contexts/AuthContext';
 
-const TaskModal = ({ task, onClose, onTaskUpdate, priorities, states, users, authState }) => {
+const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => {
   const [taskData, setTaskData] = useState(task);
+  const { state: authState } = useAuth();
+  const [priorities, setPriorities] = useState([]);
 
   useEffect(() => {
     setTaskData(task);
+    fetchPriorities();
   }, [task]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTaskData({ ...taskData, [name]: value });
+    setTaskData(prevData => ({ ...prevData, [name]: value }));
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch(`https://sandbox.academiadevelopers.com/taskmanager/tasks/${taskData.id}/`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Token ${authState.token}`,
@@ -30,6 +34,21 @@ const TaskModal = ({ task, onClose, onTaskUpdate, priorities, states, users, aut
       onClose();
     } catch (error) {
       console.error('Error updating task:', error);
+    }
+  };
+
+  const fetchPriorities = async () => {
+    try {
+      const response = await fetch('https://sandbox.academiadevelopers.com/taskmanager/priorities/', {
+        headers: {
+          'Authorization': `Token ${authState.token}`
+        }
+      });
+      if (!response.ok) throw new Error(`Error: ${response.status}`);
+      const data = await response.json();
+      setPriorities(data.results);
+    } catch (error) {
+      console.error('Error fetching priorities:', error);
     }
   };
 
@@ -55,13 +74,12 @@ const TaskModal = ({ task, onClose, onTaskUpdate, priorities, states, users, aut
             <div className="field">
               <label className="label">Descripción</label>
               <div className="control">
-                <input
-                  className="input"
-                  type="text"
+                <textarea
+                  className="textarea"
                   name="description"
                   value={taskData.description || ''}
                   onChange={handleChange}
-                />
+                ></textarea>
               </div>
             </div>
             <div className="field">
@@ -92,7 +110,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate, priorities, states, users, aut
                         </option>
                       ))
                     ) : (
-                      <option value="">No priorities available</option>
+                      <option value="">No hay prioridades disponibles</option>
                     )}
                   </select>
                 </div>
@@ -114,7 +132,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate, priorities, states, users, aut
                         </option>
                       ))
                     ) : (
-                      <option value="">No states available</option>
+                      <option value="">No hay estados disponibles</option>
                     )}
                   </select>
                 </div>
@@ -136,7 +154,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate, priorities, states, users, aut
                         </option>
                       ))
                     ) : (
-                      <option value="">No users available</option>
+                      <option value="">No hay usuarios disponibles</option>
                     )}
                   </select>
                 </div>
@@ -164,6 +182,14 @@ const TaskModal = ({ task, onClose, onTaskUpdate, priorities, states, users, aut
       <button className="modal-close is-large" aria-label="close" onClick={onClose}></button>
     </div>
   );
+};
+
+TaskModal.propTypes = {
+  task: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onTaskUpdate: PropTypes.func.isRequired,
+  states: PropTypes.array,
+  users: PropTypes.array,
 };
 
 export default TaskModal;

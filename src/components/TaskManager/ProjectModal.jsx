@@ -251,28 +251,12 @@ const ProjectModal = ({ project, onClose, onProjectUpdate }) => {
           {project && (
             <div>
               <h3 className="title is-5 mt-4">Tareas del Proyecto</h3>
-              <button
-                className="button is-link mb-4"
-                onClick={handleAddTask}
-              >
-                Añadir Tarea
-              </button>
               <TaskList tasks={tasks} onEditTask={handleEditTask} onDeleteTask={handleTaskDelete} />
             </div>
           )}
         </div>
       </div>
       <button className="modal-close is-large" aria-label="close" onClick={onClose}></button>
-      {isTaskModalOpen && (
-        <TaskModal
-          task={selectedTask}
-          projectId={project.id}
-          users={users}
-          priorities={priorities}
-          onClose={handleTaskModalClose}
-          onTaskUpdate={handleTaskUpdate}
-        />
-      )}
       {isCreateTaskModalOpen && (
         <CreateTask
           onClose={handleCreateTaskClose}

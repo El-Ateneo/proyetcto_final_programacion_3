@@ -10,6 +10,7 @@ import NavBar from "../components/NavBar";
 import LoginModal from "../components/Auth/LoginModal";
 import ProfilePage from "../components/Perfil/ProfilePage";
 import ProjectList from "../components/TaskManager/ProjectList";
+import TaskListAll from "../components/TaskManager/TaskListAll";
 
 const Router = createBrowserRouter(
     [

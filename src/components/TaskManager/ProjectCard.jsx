@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import ProjectModal from './ProjectModal';
 import TaskModal from './TaskModal'; // Importa el componente TaskModal
-//import { FaEdit, FaTrash } from 'react';
+
 
 const ProjectCard = ({ project, onProjectUpdate, onProjectDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -155,8 +155,7 @@ const ProjectCard = ({ project, onProjectUpdate, onProjectDelete }) => {
                 <th>Estado</th>
                 <th>Asignado a</th>
                 <th>Creado por</th>
-                <th>Fecha de Vencimiento</th> {/* Nueva columna agregada */}
-                <th>Acciones</th> {/* Columna para los iconos de acción */}
+                <th>Fecha de Vencimiento</th> {/* Nueva columna agregada */}                
               </tr>
             </thead>
             <tbody>
@@ -169,15 +168,6 @@ const ProjectCard = ({ project, onProjectUpdate, onProjectDelete }) => {
                   <td>{users[task.assigned_to]}</td>
                   <td>{users[task.owner]}</td>
                   <td>{task.due_date}</td> {/* Nuevo campo agregado */}
-                  <td>
-                    <button className="icon " onClick={() => handleEditTask(task)}>
-                      <i className="fas fa-edit" aria-hidden="true"></i>                 
-                    </button>
-                    <button className="icon " onClick={() => handleDelete(task.id)}>
-                      <i className="fas fa-trash" aria-hidden="true"></i>
-                    
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -191,7 +181,6 @@ const ProjectCard = ({ project, onProjectUpdate, onProjectDelete }) => {
           onProjectUpdate={onProjectUpdate}
         />
       )}
-
       {isTaskModalOpen && selectedTask && (
         <TaskModal
           task={selectedTask}
