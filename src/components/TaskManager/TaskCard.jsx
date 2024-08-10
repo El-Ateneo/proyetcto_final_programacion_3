@@ -1,37 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import TaskModal from './TaskModal'; // Asegúrate de importar el TaskModal
+import TaskModal from './TaskModal';
 import { useAuth } from '../../contexts/AuthContext';
 
 const TaskCard = ({ task, onTaskUpdate, onTaskDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [users, setUsers] = useState({});
-  const [statuses, setStatuses] = useState({});
-  const [priorities, setPriorities] = useState({});
+  const [users, setUsers] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+  const [priorities, setPriorities] = useState([]);
   const { state: authState } = useAuth();
 
   useEffect(() => {
     const fetchTaskDetails = async () => {
       try {
-        const userIds = [task.assigned_to, task.owner];
-        const statusId = task.status;
-        const priorityId = task.priority;
-        
         // Fetch users
+        const userIds = [task.assigned_to, task.owner];
         if (userIds.some(id => id)) {
           const uniqueUserIds = [...new Set(userIds)];
           const userPromises = uniqueUserIds
-          .filter(id => id) // Filtra IDs no válidos
-          .map(id =>
-            fetch(`https://sandbox.academiadevelopers.com/users/profiles/${id}/`, {
-              headers: { 'Authorization': `Token ${authState.token}` }
-            }).then(response => response.json())
-          );
+            .filter(id => id)
+            .map(id =>
+              fetch(`https://sandbox.academiadevelopers.com/users/profiles/${id}/`, {
+                headers: { 'Authorization': `Token ${authState.token}` }
+              }).then(response => response.json())
+            );
           const userResponses = await Promise.all(userPromises);
-          const userMap = userResponses.reduce((acc, user) => {
-            acc[user.user__id] = `${user.first_name} ${user.last_name}`;
-            return acc;
-          }, {});
-          setUsers(userMap);
+          setUsers(userResponses.map(user => ({
+            user__id: user.user__id,
+            fullName: `${user.first_name} ${user.last_name}`
+          })));
         }
 
         // Fetch statuses
@@ -39,22 +35,20 @@ const TaskCard = ({ task, onTaskUpdate, onTaskDelete }) => {
           headers: { 'Authorization': `Token ${authState.token}` }
         });
         const statusData = await statusResponse.json();
-        const statusMap = statusData.results.reduce((acc, status) => {
-          acc[status.id] = status.name;
-          return acc;
-        }, {});
-        setStatuses(statusMap);
+        setStatuses(statusData.results.map(status => ({
+          id: status.id,
+          name: status.name
+        })));
 
         // Fetch priorities
         const priorityResponse = await fetch('https://sandbox.academiadevelopers.com/taskmanager/task-priorities/', {
           headers: { 'Authorization': `Token ${authState.token}` }
         });
         const priorityData = await priorityResponse.json();
-        const priorityMap = priorityData.results.reduce((acc, priority) => {
-          acc[priority.id] = priority.priority;
-          return acc;
-        }, {});
-        setPriorities(priorityMap);
+        setPriorities(priorityData.results.map(priority => ({
+          id: priority.id,
+          priority: priority.priority
+        })));
 
       } catch (error) {
         console.error('Error fetching details:', error);
@@ -86,30 +80,32 @@ const TaskCard = ({ task, onTaskUpdate, onTaskDelete }) => {
       </header>
       <div className="card-content">
         <div className="content">
-          <p><strong>Descripcion: </strong> {task.description || 'sin descripcion'}</p>
-          <p><strong>fecha de entrega: </strong> {task.due_date || 'sin fecha ded entega'}</p>
-          <p><strong>Prioridad: </strong> {priorities[task.priority] || 'sin prioridad'}</p>
-          <p><strong>Asignado A: </strong> {users[task.assigned_to] || 'sin asignacion'}</p>
-          <p><strong>Creado Por: </strong> {users[task.owner] || 'sin dato del creador'}</p>
-          <p><strong>Estado: </strong> {statuses[task.status] || 'sin estado'}</p>
+          <p><strong>Descripción: </strong> {task.description || 'sin descripción'}</p>
+          <p><strong>Fecha de Entrega: </strong> {task.due_date || 'sin fecha de entrega'}</p>
+          <p><strong>Prioridad: </strong> {priorities.find(p => p.id === task.priority)?.priority || 'sin prioridad'}</p>
+          <p><strong>Asignado A: </strong> {users.find(u => u.user__id === task.assigned_to)?.fullName || 'sin asignación'}</p>
+          <p><strong>Creado Por: </strong> {users.find(u => u.user__id === task.owner)?.fullName || 'sin dato del creador'}</p>
+          <p><strong>Estado: </strong> {statuses.find(s => s.id === task.status)?.name || 'sin estado'}</p>
         </div>
       </div>
       <footer className="card-footer">
         <button className="card-footer-item button is-primary" onClick={handleEdit}>
-          Edit
+          Editar
         </button>
         <button className="card-footer-item button is-danger" onClick={handleDelete}>
-          Delete
+          Eliminar
         </button>
       </footer>
       {isModalOpen && (
         <TaskModal
           task={task}
           onClose={handleModalClose}
-          onSave={handleTaskUpdate}
+          onTaskUpdate={handleTaskUpdate}
           priorities={priorities}
-          statuses={statuses}
+          states={statuses}
           users={users}
+          authState={authState}
+          projectId={task.project}
         />
       )}
     </div>

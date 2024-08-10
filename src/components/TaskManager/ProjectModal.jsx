@@ -257,6 +257,16 @@ const ProjectModal = ({ project, onClose, onProjectUpdate }) => {
         </div>
       </div>
       <button className="modal-close is-large" aria-label="close" onClick={onClose}></button>
+      {isTaskModalOpen && (
+        <TaskModal
+          task={selectedTask}
+          projectId={project.id}
+          users={users}
+          priorities={priorities}
+          onClose={handleTaskModalClose}
+          onTaskUpdate={handleTaskUpdate}
+        />
+      )}
       {isCreateTaskModalOpen && (
         <CreateTask
           onClose={handleCreateTaskClose}

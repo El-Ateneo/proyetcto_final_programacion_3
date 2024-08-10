@@ -1,63 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useAuth } from '../../contexts/AuthContext';
 
-const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => {
-  const [taskData, setTaskData] = useState(task);
-  const { state: authState } = useAuth();
-  const [priorities, setPriorities] = useState([]);
+const TaskModal = ({ task, onClose, onTaskUpdate, priorities, states, users, authState, projectId }) => {
+  const [taskData, setTaskData] = useState({
+    title: '',
+    description: '',
+    priority: '',
+    status: '',
+    assigned_to: '',
+    due_date: '',
+    project: projectId || '',
+  });
 
   useEffect(() => {
-    setTaskData(task);
-    fetchPriorities();
-  }, [task]);
+    if (task) {
+      setTaskData({
+        title: task.title || '',
+        description: task.description || '',
+        priority: task.priority || '',
+        status: task.status || '',
+        assigned_to: task.assigned_to || '',
+        due_date: task.due_date || '',
+        project: task.project || projectId || '',
+      });
+    }
+  }, [task, projectId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTaskData(prevData => ({ ...prevData, [name]: value }));
+    setTaskData({ ...taskData, [name]: value });
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`https://sandbox.academiadevelopers.com/taskmanager/tasks/${taskData.id}/`, {
-        method: 'PATCH',
+      const url = task ? `https://sandbox.academiadevelopers.com/taskmanager/tasks/${task.id}/` : 'https://sandbox.academiadevelopers.com/taskmanager/tasks/';
+      const method = task ? 'PATCH' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Token ${authState.token}`,
         },
         body: JSON.stringify(taskData),
       });
+
       if (!response.ok) throw new Error(`Error: ${response.status}`);
       const updatedTask = await response.json();
       onTaskUpdate(updatedTask);
       onClose();
     } catch (error) {
-      console.error('Error updating task:', error);
-    }
-  };
-
-  const fetchPriorities = async () => {
-    try {
-      const response = await fetch('https://sandbox.academiadevelopers.com/taskmanager/priorities/', {
-        headers: {
-          'Authorization': `Token ${authState.token}`
-        }
-      });
-      if (!response.ok) throw new Error(`Error: ${response.status}`);
-      const data = await response.json();
-      setPriorities(data.results);
-    } catch (error) {
-      console.error('Error fetching priorities:', error);
+      console.error('Error saving task:', error);
     }
   };
 
   return (
     <div className="modal is-active">
-      <div className="modal-background" onClick={onClose}></div>
+      <div className="modal-background"></div>
       <div className="modal-content">
         <div className="box">
-          <h2 className="title">Editar Tarea</h2>
+          <h2 className="title">{task ? 'Editar Tarea' : 'Crear Tarea'}</h2>
           <form onSubmit={handleSave}>
             <div className="field">
               <label className="label">Título</label>
@@ -66,7 +68,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => 
                   className="input"
                   type="text"
                   name="title"
-                  value={taskData.title || ''}
+                  value={taskData.title}
                   onChange={handleChange}
                 />
               </div>
@@ -74,12 +76,13 @@ const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => 
             <div className="field">
               <label className="label">Descripción</label>
               <div className="control">
-                <textarea
-                  className="textarea"
+                <input
+                  className="input"
+                  type="text"
                   name="description"
-                  value={taskData.description || ''}
+                  value={taskData.description}
                   onChange={handleChange}
-                ></textarea>
+                />
               </div>
             </div>
             <div className="field">
@@ -89,7 +92,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => 
                   className="input"
                   type="date"
                   name="due_date"
-                  value={taskData.due_date || ''}
+                  value={taskData.due_date}
                   onChange={handleChange}
                 />
               </div>
@@ -100,7 +103,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => 
                 <div className="select">
                   <select
                     name="priority"
-                    value={taskData.priority || ''}
+                    value={taskData.priority}
                     onChange={handleChange}
                   >
                     {priorities.length > 0 ? (
@@ -122,7 +125,7 @@ const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => 
                 <div className="select">
                   <select
                     name="status"
-                    value={taskData.status || ''}
+                    value={taskData.status}
                     onChange={handleChange}
                   >
                     {states.length > 0 ? (
@@ -139,18 +142,18 @@ const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => 
               </div>
             </div>
             <div className="field">
-              <label className="label">Usuario Asignado</label>
+              <label className="label">Asignado a</label>
               <div className="control">
                 <div className="select">
                   <select
                     name="assigned_to"
-                    value={taskData.assigned_to || ''}
+                    value={taskData.assigned_to}
                     onChange={handleChange}
                   >
                     {users.length > 0 ? (
                       users.map(user => (
                         <option key={user.user__id} value={user.user__id}>
-                          {user.last_name} {user.first_name}
+                          {user.fullName}
                         </option>
                       ))
                     ) : (
@@ -160,18 +163,12 @@ const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => 
                 </div>
               </div>
             </div>
-            <div className="field is-grouped">
+            <div className="field">
               <div className="control">
                 <button className="button is-primary" type="submit">
-                  Guardar
+                  {task ? 'Guardar Cambios' : 'Crear Tarea'}
                 </button>
-              </div>
-              <div className="control">
-                <button
-                  className="button"
-                  type="button"
-                  onClick={onClose}
-                >
+                <button className="button is-light" type="button" onClick={onClose}>
                   Cancelar
                 </button>
               </div>
@@ -182,14 +179,6 @@ const TaskModal = ({ task, onClose, onTaskUpdate, states = [], users = [] }) => 
       <button className="modal-close is-large" aria-label="close" onClick={onClose}></button>
     </div>
   );
-};
-
-TaskModal.propTypes = {
-  task: PropTypes.object.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onTaskUpdate: PropTypes.func.isRequired,
-  states: PropTypes.array,
-  users: PropTypes.array,
 };
 
 export default TaskModal;
