@@ -32,7 +32,7 @@ function NavBar({ appName }) {
                     <div className="columns is-vcentered">
                         <Link className="navbar-item column" to="/home">
                             <img
-                                src={appLogo}
+                                src={'https://images.squarespace-cdn.com/content/v1/55d6264ee4b074f43cec4558/1535467135774-T4DYPSFYNSQAJJMKP7FM/checklist.gif'}
                                 alt="App Logo"
                                 className="image is-100x100"
                             />

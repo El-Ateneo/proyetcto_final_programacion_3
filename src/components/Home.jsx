@@ -16,8 +16,8 @@ function Home() {
                 Manage your tasks effectively and efficiently with our application.
             </p>
 
-            <figure className="image is-400x396 is-inline-block">
-                 <img src="src/assets/img/checklist.gif" alt="Login Icon" />
+            <figure className="image is-616x417 is-inline-block is-background">
+                 <img src="https://i.pinimg.com/736x/c5/ec/53/c5ec534eb0f409d9bd30b8d2b44c966a.jpg" />
             </figure>
 
            
