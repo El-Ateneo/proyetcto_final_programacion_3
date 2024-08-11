@@ -4,6 +4,7 @@ import useTheme from "../hooks/useTheme";
 import NavBar from "../components/NavBar";
 import FooterBar from "../components/FooterBar";
 import { AuthProvider } from "../contexts/AuthContext";
+import "./index.css"  
 
 export default function Layout() {
     const [theme, toggleTheme] = useTheme();
@@ -15,7 +16,7 @@ export default function Layout() {
             >
                 <ThemeContext.Provider value={{ theme, toggleTheme }}>
                     <NavBar appName={"Task Manager"} />
-                    <div className={`container`}>  
+                    <div className="conteiner">  
                         <Outlet />
                     </div>
                     <FooterBar

@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
 
+
 function Home() {
     const { state } = useAuth();
     const { isAuthenticated } = state;
@@ -8,7 +9,7 @@ function Home() {
 
     return (
         
-        <div>
+        <div className="home_conteiner">
             
             <h1>Welcome to Task Manager</h1>
             <p>
