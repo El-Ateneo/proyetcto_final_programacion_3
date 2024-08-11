@@ -73,6 +73,7 @@ const TaskCard = ({ task, onTaskUpdate, onTaskDelete }) => {
     setIsModalOpen(false);
   };
 
+  
   return (
     <div className="card">
       <header className="card-header">

@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "../components/Auth/LoginModal";
-import SongList from "../components/TaskManager/SongList";
+
 import Layout from "./Layout";
 import About from "../components/About";
 import ProtectedRoute from "./ProtectedRoute";
@@ -30,15 +30,6 @@ const Router = createBrowserRouter(
                     element: <Login/>,
                 },
 
-                {
-                    // index: true, 
-                    path: "/songlist",
-                    element: (
-                        <ProtectedRoute>
-                            <SongList />
-                        </ProtectedRoute>
-                    ),
-                },
                 {
                     // index: true, 
                     path: "/profile",
