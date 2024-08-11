@@ -67,9 +67,6 @@ const Router = createBrowserRouter(
             ],
         },
     ],
-    {
-        basename: "/react_context",
-    }
 );
 
 export default Router;
