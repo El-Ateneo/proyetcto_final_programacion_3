@@ -2,7 +2,7 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import ThemeContext from "../contexts/ThemeContext";
-import appLogo from "../assets/img/1.gif";
+
 import NavMenu from "./NavMenu";
 import LoginModal from "./Auth/LoginModal";
 import { useAuth } from "../contexts/AuthContext";
