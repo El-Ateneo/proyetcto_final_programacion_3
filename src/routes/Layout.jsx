@@ -22,7 +22,7 @@ export default function Layout() {
                         appName={"Created by Frias Alejandro"}
                         socialNetworks={[
                             { name: "facebook", url: "https://facebook.com" },
-                            { name: "twitter", url: "https://twitter.com" },
+                            { name: "github", url: "https://github.com/El-Ateneo" },
                             { name: "instagram", url: "https://instagram.com" },
                         ]}
                     />
