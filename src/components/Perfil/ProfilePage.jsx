@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-//import { useAuth } from '../contexts/AuthContext';
 import { useAuth } from "../../contexts/AuthContext";
 import EditProfileModal from './EditProfileModal';
 
@@ -28,6 +27,7 @@ function ProfilePage() {
             console.error('Error fetching profile data:', error);
         }
     };
+
     const handleEditClick = () => {
         setModalOpen(true);
     };
@@ -41,34 +41,41 @@ function ProfilePage() {
         setModalOpen(false);
     };
 
-    console.log("datos del usuario: ", profile)
+    if (!profile) return <div className="has-text-centered">Loading...</div>;
 
-    if (!profile) return <div>Loading...</div>;
     const profileImageUrl = `https://sandbox.academiadevelopers.com${profile.image}`;
 
     return (
-        <div className="profile-page">
-            <h1>Mi Perfil</h1>
-            <div className="profile-container">
-                <div className="profile-image">
-
-                    <figure class="image is-128x128">
-                        <img class="is-rounded"  src= {profileImageUrl} alt="User Profile"/>
-                    </figure>
-                </div>
-                <div className="profile-info">
-                    <p>Nombre de Usuario: {profile.username}</p>
-                    <p>Nombre: {profile.first_name}</p>
-                    <p>Apellido: {profile.last_name}</p>
-                    <p>Email: {profile.email}</p>
-                    <p>Fecha de Nacimiento: {profile.dob ? profile.dob : 'No proporcionada'}</p>
-                    <p>Biografía: {profile.bio ? profile.bio : 'No proporcionada'}</p>
-                    <p>Estado: {profile.state ? profile.state.name : 'No proporcionado'}</p>
-                    <p>Creado el: {new Date(profile.created_at).toLocaleString()}</p>
-                    <p>Actualizado el: {new Date(profile.updated_at).toLocaleString()}</p>
-                    <button className="button is-primary" onClick={handleEditClick}>
-                        Editar Perfil
-                    </button>
+        <div className="container mt-5">
+            <h1 className="title is-2 has-text-centered has-text-primary">Mi Perfil</h1>
+            <div className="columns is-centered">
+                <div className="column is-8-tablet is-6-desktop is-5-widescreen">
+                    <div className="columns is-vcentered">
+                        <div className="column is-narrow">
+                            <figure className="image is-128x128 has-border">
+                                <img className="is-rounded" src={profileImageUrl} alt="User Profile" />
+                            </figure>
+                        </div>
+                        <div className="column">
+                            <div className="box has-background">
+                                <div className="content">
+                                    <p className="title is-4">Datos del usuario:</p>
+                                    <p className="subtitle is-5">Nombre de Usuario: <strong>{profile.username}</strong></p>
+                                    <p className="subtitle is-5">Nombre: <strong>{profile.first_name}</strong></p>
+                                    <p className="subtitle is-5">Apellido: <strong>{profile.last_name}</strong></p>
+                                    <p className="subtitle is-5">Email: <strong>{profile.email}</strong></p>
+                                    <p className="subtitle is-5">Fecha de Nacimiento: <strong>{profile.dob ? profile.dob : 'No proporcionada'}</strong></p>
+                                    <p className="subtitle is-5">Biografía: <strong>{profile.bio ? profile.bio : 'No proporcionada'}</strong></p>
+                                    <p className="subtitle is-5">Estado: <strong>{profile.state ? profile.state.name : 'No proporcionado'}</strong></p>
+                                    <p className="subtitle is-5">Creado el: <strong>{new Date(profile.created_at).toLocaleString()}</strong></p>
+                                    <p className="subtitle is-5">Actualizado el: <strong>{new Date(profile.updated_at).toLocaleString()}</strong></p>
+                                    <button className="button is-primary is-fullwidth mt-4" onClick={handleEditClick}>
+                                        Editar Perfil
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             {isModalOpen && (
@@ -80,7 +87,6 @@ function ProfilePage() {
             )}
         </div>
     );
-};
-
+}
 
 export default ProfilePage;

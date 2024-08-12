@@ -11,9 +11,7 @@ export default function Layout() {
 
     return (
         <AuthProvider initialState= {{isAuthenticated: false}}>
-            <div
-                className={`hero is-fullheight is-flex is-flex-direction-column`}
-            >
+            
                 <ThemeContext.Provider value={{ theme, toggleTheme }}>
                     <NavBar appName={"Task Manager"} />
                     <div className="conteiner">  
@@ -28,7 +26,7 @@ export default function Layout() {
                         ]}
                     />
                 </ThemeContext.Provider>
-            </div>
+            
         </AuthProvider>
     );
 }
